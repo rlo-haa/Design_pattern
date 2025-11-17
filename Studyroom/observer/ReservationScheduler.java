@@ -51,7 +51,7 @@ public class ReservationScheduler {
     }
 
     /**
-     * 예약 만료 알림 스케줄링
+     * 예약 만료 알림 스케줄링 (Reservation 객체 사용)
      */
     public void scheduleExpiryNotification(Reservation reservation) {
         ScheduledReservation scheduled = new ScheduledReservation(
@@ -61,6 +61,17 @@ public class ReservationScheduler {
                 reservation.getEndTime()
         );
         scheduledReservations.put(reservation.getId(), scheduled);
+    }
+
+    /**
+     * 예약 만료 알림 스케줄링 (개별 파라미터 사용 - 하위 호환성)
+     */
+    public void scheduleExpiryNotification(String reservationId, Member member,
+                                           String roomId, LocalDateTime expiryTime) {
+        ScheduledReservation scheduled = new ScheduledReservation(
+                reservationId, member, roomId, expiryTime
+        );
+        scheduledReservations.put(reservationId, scheduled);
     }
 
     /**

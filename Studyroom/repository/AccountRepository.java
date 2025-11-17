@@ -1,13 +1,12 @@
 package repository;
 
 import account.Account;
-import account.Member;
+import model.Member;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 계정 저장소
- * 계정 검색 및 전체 회원 조회 기능 제공
  */
 public final class AccountRepository {
     private final Map<String, Account> accounts = new ConcurrentHashMap<>();
@@ -27,7 +26,7 @@ public final class AccountRepository {
     }
 
     /**
-     * 전체 회원 목록 조회 (Member만 필터링)
+     * 전체 회원 목록 조회 (model.Member만 필터링)
      */
     public List<Member> findAllMembers() {
         return accounts.values().stream()

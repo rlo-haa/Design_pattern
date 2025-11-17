@@ -2,6 +2,7 @@ package observer;
 
 import model.Room;
 import model.RoomStatus;
+import model.RoomGrade;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,10 +37,18 @@ public class RoomInventory {
     }
 
     /**
-     * 방 추가
+     * 방 추가 (Room 객체)
      */
     public void addRoom(Room room) {
         rooms.put(room.getId(), room);
+    }
+
+    /**
+     * 방 추가 (ID만 - 하위 호환성, 기본 BRONZE 등급)
+     */
+    public void addRoom(String roomId) {
+        Room room = new Room(roomId, roomId, RoomGrade.BRONZE, 4);
+        rooms.put(roomId, room);
     }
 
     /**
