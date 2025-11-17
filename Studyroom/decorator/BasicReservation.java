@@ -1,13 +1,18 @@
-package studyroom.decorator;
+package decorator;
 
+import model.Reservation;
 import java.math.BigDecimal;
 
-class BasicReservation implements ReservationComponent {
-    private final String roomType;
+/**
+ * 기본 예약 컴포넌트
+ * 장비 없이 방만 예약한 상태
+ */
+public class BasicReservation implements ReservationComponent {
+    private final Reservation reservation;
     private final BigDecimal basePrice;
 
-    public BasicReservation(String roomType, BigDecimal basePrice) {
-        this.roomType = roomType;
+    public BasicReservation(Reservation reservation, BigDecimal basePrice) {
+        this.reservation = reservation;
         this.basePrice = basePrice;
     }
 
@@ -18,6 +23,12 @@ class BasicReservation implements ReservationComponent {
 
     @Override
     public String getDescription() {
-        return "기본 스터디룸 (" + roomType + ")";
+        return String.format("기본 스터디룸 (%s, %s등급)",
+                reservation.getRoom().getName(),
+                reservation.getRoom().getGrade().getDisplayName());
+    }
+
+    public Reservation getReservation() {
+        return reservation;
     }
 }

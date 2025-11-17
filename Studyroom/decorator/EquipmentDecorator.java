@@ -1,8 +1,11 @@
-package studyroom.decorator;
+package decorator;
 
 import java.math.BigDecimal;
 
-abstract class EquipmentDecorator implements ReservationComponent {
+/**
+ * 장비 데코레이터 추상 클래스
+ */
+public abstract class EquipmentDecorator implements ReservationComponent {
     protected ReservationComponent reservation;
     protected String equipmentName;
     protected BigDecimal equipmentPrice;
@@ -21,5 +24,13 @@ abstract class EquipmentDecorator implements ReservationComponent {
     @Override
     public String getDescription() {
         return reservation.getDescription() + " + " + equipmentName;
+    }
+
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+
+    public BigDecimal getEquipmentPrice() {
+        return equipmentPrice;
     }
 }

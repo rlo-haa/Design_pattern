@@ -1,19 +1,21 @@
-// GoldServiceFactory.java
+package factory;
+
+import decorator.*;
+import model.Reservation;
+import java.math.BigDecimal;
+
+/**
+ * 골드 등급 서비스 팩토리
+ * 화이트보드 + 충전기 + 웹캠 + 프로젝터 제공 (풀패키지)
+ */
 public class GoldServiceFactory implements ServiceFactory {
-    private WhiteBoardDecorator whiteBoardDecorator;
-    private ChargerDecorator chargerDecorator;
-    private WebcamDecorator webcamDecorator;
-    private ProjectorDecorator projectorDecorator;
-
     @Override
-    public ReservationComponent createReservation(String baseReservation, Registering registering) {
-        ReservationComponent component = new BaseReservation(baseReservation, registering);
-
-        whiteBoardDecorator = new WhiteBoardDecorator(component);
-        chargerDecorator = new ChargerDecorator(whiteBoardDecorator);
-        webcamDecorator = new WebcamDecorator(chargerDecorator);
-        projectorDecorator = new ProjectorDecorator(webcamDecorator);
-
-        return projectorDecorator; // 데코레이터 반환
+    public ReservationComponent createReservation(Reservation reservation, BigDecimal basePrice) {
+        ReservationComponent component = new BasicReservation(reservation, basePrice);
+        component = new WhiteboardDecorator(component);
+        component = new ChargerDecorator(component);
+        component = new WebcamDecorator(component);
+        component = new ProjectorDecorator(component);
+        return component;
     }
 }

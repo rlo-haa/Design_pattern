@@ -1,26 +1,26 @@
 package observer;
 
-import account.Member;
-import java.time.Instant;
+import model.Member;
+import model.Reservation;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 예약 만료를 감지하고 관련 옵저버에게 알림을 전송하는 Subject
+ * 예약 만료 스케줄러 및 Observer Subject
  */
-public final class ReservationScheduler {
+public class ReservationScheduler {
     private final Map<String, ScheduledReservation> scheduledReservations = new ConcurrentHashMap<>();
     private final List<ReservationExpiryObserver> observers = new ArrayList<>();
 
-    /**
-     * 예약 정보를 담는 내부 클래스
-     */
     private static class ScheduledReservation {
+        final String reservationId;
         final Member member;
         final String roomId;
-        final Instant expiryTime;
+        final LocalDateTime expiryTime;
 
-        ScheduledReservation(Member member, String roomId, Instant expiryTime) {
+        ScheduledReservation(String reservationId, Member member, String roomId, LocalDateTime expiryTime) {
+            this.reservationId = reservationId;
             this.member = member;
             this.roomId = roomId;
             this.expiryTime = expiryTime;
@@ -52,15 +52,15 @@ public final class ReservationScheduler {
 
     /**
      * 예약 만료 알림 스케줄링
-     * @param reservationId 예약 ID
-     * @param member 회원 정보
-     * @param roomId 방 ID
-     * @param expiryTime 만료 시각
      */
-    public void scheduleExpiryNotification(String reservationId, Member member,
-                                          String roomId, Instant expiryTime) {
-        ScheduledReservation reservation = new ScheduledReservation(member, roomId, expiryTime);
-        scheduledReservations.put(reservationId, reservation);
+    public void scheduleExpiryNotification(Reservation reservation) {
+        ScheduledReservation scheduled = new ScheduledReservation(
+                reservation.getId(),
+                reservation.getMember(),
+                reservation.getRoom().getId(),
+                reservation.getEndTime()
+        );
+        scheduledReservations.put(reservation.getId(), scheduled);
     }
 
     /**
@@ -71,35 +71,32 @@ public final class ReservationScheduler {
     }
 
     /**
-     * 만료된 예약을 확인하고 옵저버에게 알림
-     * 주기적으로 호출되어야 하는 메서드
+     * 만료된 예약 확인 및 알림
      */
     public void checkAndNotify() {
-        Instant now = Instant.now();
+        LocalDateTime now = LocalDateTime.now();
         List<String> expiredIds = new ArrayList<>();
 
         for (Map.Entry<String, ScheduledReservation> entry : scheduledReservations.entrySet()) {
-            ScheduledReservation reservation = entry.getValue();
+            ScheduledReservation scheduled = entry.getValue();
 
-            if (now.isAfter(reservation.expiryTime)) {
-                // 만료된 예약 발견
+            if (now.isAfter(scheduled.expiryTime)) {
                 ReservationExpiredEvent event = new ReservationExpiredEvent(
-                    reservation.member,
-                    reservation.roomId,
-                    reservation.expiryTime
+                        scheduled.reservationId,
+                        scheduled.member,
+                        scheduled.roomId,
+                        scheduled.expiryTime
                 );
-
                 notifyObservers(event);
                 expiredIds.add(entry.getKey());
             }
         }
 
-        // 만료된 예약 제거
         expiredIds.forEach(scheduledReservations::remove);
     }
 
     /**
-     * 현재 스케줄된 예약 개수 조회
+     * 현재 스케줄된 예약 개수
      */
     public int getScheduledCount() {
         return scheduledReservations.size();

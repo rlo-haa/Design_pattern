@@ -1,21 +1,26 @@
 package observer;
 
-import account.Member;
-import java.time.Instant;
+import model.Member;
+import java.time.LocalDateTime;
 
 /**
- * 예약 만료 시 발생하는 이벤트 객체
- * 만료된 Member와 Room 정보를 포함
+ * 예약 만료 이벤트
  */
-public final class ReservationExpiredEvent {
+public class ReservationExpiredEvent {
+    private final String reservationId;
     private final Member member;
     private final String roomId;
-    private final Instant expiredAt;
+    private final LocalDateTime expiredAt;
 
-    public ReservationExpiredEvent(Member member, String roomId, Instant expiredAt) {
+    public ReservationExpiredEvent(String reservationId, Member member, String roomId, LocalDateTime expiredAt) {
+        this.reservationId = reservationId;
         this.member = member;
         this.roomId = roomId;
         this.expiredAt = expiredAt;
+    }
+
+    public String getReservationId() {
+        return reservationId;
     }
 
     public Member getMember() {
@@ -26,16 +31,13 @@ public final class ReservationExpiredEvent {
         return roomId;
     }
 
-    public Instant getExpiredAt() {
+    public LocalDateTime getExpiredAt() {
         return expiredAt;
     }
 
     @Override
     public String toString() {
-        return "ReservationExpiredEvent{" +
-                "member=" + member.getName() +
-                ", roomId='" + roomId + '\'' +
-                ", expiredAt=" + expiredAt +
-                '}';
+        return String.format("ReservationExpiredEvent{id='%s', member='%s', room='%s', expiredAt=%s}",
+                reservationId, member.getName(), roomId, expiredAt);
     }
 }

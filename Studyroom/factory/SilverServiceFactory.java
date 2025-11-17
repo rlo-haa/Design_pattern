@@ -1,17 +1,20 @@
-// SilverServiceFactory.java
+package factory;
+
+import decorator.*;
+import model.Reservation;
+import java.math.BigDecimal;
+
+/**
+ * 실버 등급 서비스 팩토리
+ * 화이트보드 + 프로젝터 + 웹캠 제공
+ */
 public class SilverServiceFactory implements ServiceFactory {
-    private WhiteBoardDecorator whiteBoardDecorator;
-    private ProjectorDecorator projectorDecorator;
-    private WebcamDecorator webcamDecorator;
-
     @Override
-    public ReservationComponent createReservation(String baseReservation, Registering registering) {
-        ReservationComponent component = new BaseReservation(baseReservation, registering);
-
-        whiteBoardDecorator = new WhiteBoardDecorator(component);
-        projectorDecorator = new ProjectorDecorator(whiteBoardDecorator);
-        webcamDecorator = new WebcamDecorator(projectorDecorator);
-
-        return webcamDecorator; // 데코레이터 반환
+    public ReservationComponent createReservation(Reservation reservation, BigDecimal basePrice) {
+        ReservationComponent component = new BasicReservation(reservation, basePrice);
+        component = new WhiteboardDecorator(component);
+        component = new ProjectorDecorator(component);
+        component = new WebcamDecorator(component);
+        return component;
     }
 }
